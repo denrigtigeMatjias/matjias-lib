@@ -1,9 +1,16 @@
 --[[
+bronx.lol-style UI Library for Roblox (Single Loadstring Version)
+Author: ChatGPT (2025)
+--]]
+
+--===[ CORE LIBRARY ]===
+
+--[[
 bronx.lol-style UI Library for Roblox
 Author: ChatGPT (2025)
 --]]
 
-local BronxUI = {}
+local Library = {}
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -26,7 +33,7 @@ local colors = {
     Card = Color3.fromRGB(40, 40, 40)
 }
 
-local SETTINGS_FILE = "BronxUI_Settings.json"
+local SETTINGS_FILE = "Library_Settings.json"
 
 -- Utility functions
 local function roundify(instance, radius)
@@ -81,11 +88,13 @@ local function loadSettings()
 end
 loadSettings()
 
+-- To be continued in next cell due to size limit...
+
 
 -- Library constructor (continued)
-function BronxUI:Window(title)
+function Library:Window(title)
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "BronxUILibrary"
+    ScreenGui.Name = "LibraryLibrary"
     ScreenGui.ResetOnSpawn = false
     ScreenGui.Parent = PlayerGui
 
@@ -242,10 +251,157 @@ function BronxUI:Window(title)
         return PageAPI
     end
 
+    
+    -- Inject Slider
+    local function registerSlider(api, settingsTable, saveSettings, colors, roundify, strokify, UIS)
+        -- SLIDER MODULE HERE
+function registerModules(api, settingsTable, saveSettings, colors, roundify, strokify)
+    -- Slider
+    function api:Slider(parent, text, min, max, default, callback)
+        local Frame = Instance.new("Frame")
+        Frame.Size = UDim2.new(1, 0, 0, 40)
+        Frame.BackgroundTransparency = 1
+        Frame.Parent = parent
+
+        local Label = Instance.new("TextLabel")
+        Label.Text = text .. ": " .. tostring(default)
+        Label.Font = Enum.Font.Gotham
+        Label.TextSize = 14
+        Label.TextColor3 = colors.Text
+        Label.BackgroundTransparency = 1
+        Label.Size = UDim2.new(1, 0, 0, 20)
+        Label.TextXAlignment = Enum.TextXAlignment.Left
+        Label.Parent = Frame
+
+        local SliderBack = Instance.new("Frame")
+        SliderBack.Size = UDim2.new(1, -10, 0, 8)
+        SliderBack.Position = UDim2.new(0, 5, 0, 25)
+        SliderBack.BackgroundColor3 = colors.Slider
+        SliderBack.Parent = Frame
+        roundify(SliderBack, 4)
+
+        local SliderFill = Instance.new("Frame")
+        SliderFill.Size = UDim2.new((default - min)/(max - min), 0, 1, 0)
+        SliderFill.BackgroundColor3 = colors.Accent
+        SliderFill.BorderSizePixel = 0
+        SliderFill.Parent = SliderBack
+        roundify(SliderFill, 4)
+
+        local dragging = false
+        local function updateSlider(input)
+            local pos = math.clamp((input.Position.X - SliderBack.AbsolutePosition.X) / SliderBack.AbsoluteSize.X, 0, 1)
+            local value = math.floor((min + (max - min) * pos) + 0.5)
+            SliderFill.Size = UDim2.new(pos, 0, 1, 0)
+            Label.Text = text .. ": " .. tostring(value)
+            settingsTable[text] = value
+            saveSettings()
+            if callback then callback(value) end
+        end
+
+        SliderBack.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+                updateSlider(input)
+            end
+        end)
+
+        SliderBack.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = false
+            end
+        end)
+
+        UIS.InputChanged:Connect(function(input)
+            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                updateSlider(input)
+            end
+        end)
+
+        if settingsTable[text] ~= nil then
+            default = settingsTable[text]
+            local pos = (default - min) / (max - min)
+            SliderFill.Size = UDim2.new(pos, 0, 1, 0)
+            Label.Text = text .. ": " .. tostring(default)
+            if callback then callback(default) end
+        end
+    end
+end
+
+return registerModules
+    end
+
+    -- Inject Dropdowns
+    local function registerDropdown(api, settingsTable, saveSettings, colors, roundify, strokify)
+        -- DROPDOWN MODULE HERE
+function registerDropdowns(api, settingsTable, saveSettings, colors, roundify, strokify)
+    -- Dropdown
+    end
+
+    local function registerMultiDropdown(api, settingsTable, saveSettings, colors, roundify, strokify)
+        -- MULTIDROPDOWN MODULE HERE
+MULTIfunction registerDropdowns(api, settingsTable, saveSettings, colors, roundify, strokify)
+    -- Dropdown
+    end
+
+    -- Inject Card
+    local function registerCard(api, settingsTable, saveSettings, colors, roundify, strokify)
+        -- CARD MODULE HERE
+function registerCard(api, settingsTable, saveSettings, colors, roundify, strokify)
+    function api:Card(parent, title, description)
+        local Frame = Instance.new("Frame")
+        Frame.Size = UDim2.new(1, 0, 0, 60)
+        Frame.BackgroundColor3 = colors.Card
+        Frame.BorderSizePixel = 0
+        Frame.Parent = parent
+        roundify(Frame, 6)
+        strokify(Frame)
+
+        local TitleLabel = Instance.new("TextLabel")
+        TitleLabel.Text = title
+        TitleLabel.Font = Enum.Font.GothamBold
+        TitleLabel.TextSize = 14
+        TitleLabel.TextColor3 = colors.Text
+        TitleLabel.BackgroundTransparency = 1
+        TitleLabel.Size = UDim2.new(1, -10, 0, 20)
+        TitleLabel.Position = UDim2.new(0, 5, 0, 5)
+        TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+        TitleLabel.Parent = Frame
+
+        local DescLabel = Instance.new("TextLabel")
+        DescLabel.Text = description
+        DescLabel.Font = Enum.Font.Gotham
+        DescLabel.TextSize = 12
+        DescLabel.TextColor3 = colors.Text
+        DescLabel.BackgroundTransparency = 1
+        DescLabel.Size = UDim2.new(1, -10, 0, 30)
+        DescLabel.Position = UDim2.new(0, 5, 0, 25)
+        DescLabel.TextXAlignment = Enum.TextXAlignment.Left
+        DescLabel.TextYAlignment = Enum.TextYAlignment.Top
+        DescLabel.TextWrapped = true
+        DescLabel.Parent = Frame
+    end
+end
+
+return registerCard
+    end
+
+    -- Register all inline
+    registerSlider(API, settingsTable, saveSettings, colors, roundify, strokify, UIS)
+    registerDropdown(API, settingsTable, saveSettings, colors, roundify, strokify)
+    registerMultiDropdown(API, settingsTable, saveSettings, colors, roundify, strokify)
+    registerCard(API, settingsTable, saveSettings, colors, roundify, strokify)
+
     return API
 end
 
-return BronxUI
+return Library
+
+
+--===[ EXTENSIONS: SLIDER ]===
+
+-- Extra Modules: Slider, Dropdown, MultiDropdown, Card
+-- These would typically be required from separate ModuleScripts.
+-- Here we define them inline to keep the library single-file.
 
 local function registerModules(api, settingsTable, saveSettings, colors, roundify, strokify)
     -- Slider
@@ -319,7 +475,12 @@ local function registerModules(api, settingsTable, saveSettings, colors, roundif
     end
 end
 
-return registerModules
+
+
+
+--===[ EXTENSIONS: DROPDOWN & MULTIDROPDOWN ]===
+
+-- Extra Modules: Dropdown and MultiDropdown
 
 local function registerDropdowns(api, settingsTable, saveSettings, colors, roundify, strokify)
     -- Dropdown
@@ -453,7 +614,12 @@ local function registerDropdowns(api, settingsTable, saveSettings, colors, round
     end
 end
 
-return registerDropdowns
+
+
+
+--===[ EXTENSIONS: CARD ]===
+
+-- Extra Module: Card
 
 local function registerCard(api, settingsTable, saveSettings, colors, roundify, strokify)
     function api:Card(parent, title, description)
@@ -491,4 +657,4 @@ local function registerCard(api, settingsTable, saveSettings, colors, roundify, 
     end
 end
 
-return registerCard
+return Library
